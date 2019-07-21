@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 
-namespace keepr.Repsositories
+namespace keepr.Repositories
 {
   public class VaultsRepository
   {
