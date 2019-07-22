@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using keepr.Models;
 using keepr.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace keepr.Controllers
@@ -17,7 +19,8 @@ namespace keepr.Controllers
     {
       _repo = repo;
     }
-    // GET api/teams
+
+    // GET api/keeps
     [HttpGet]
     public ActionResult<IEnumerable<Keep>> Get()
     {
@@ -31,7 +34,7 @@ namespace keepr.Controllers
       }
     }
 
-    // GET api/teams/5
+    // GET api/keeps/5
     [HttpGet("{id}")]
     public ActionResult<Keep> Get(int id)
     {
@@ -45,12 +48,30 @@ namespace keepr.Controllers
       }
     }
 
+    // GET api/keeps/user/
+    [HttpGet("user")]
+    [Authorize]
+    public ActionResult<Keep> GetByUserId(string id)
+    {
+      try
+      {
+        return Ok(_repo.GetByUserId(id));
+      }
+      catch (Exception e)
+      {
+        return BadRequest(e);
+      }
+    }
+
     // POST api/teams
     [HttpPost]
+    [Authorize]
     public ActionResult<Keep> Post([FromBody] Keep value)
     {
       try
       {
+        var id = HttpContext.User.FindFirstValue("Id");
+        value.UserId = id;
         return Ok(_repo.Create(value));
       }
       catch (Exception e)
@@ -60,6 +81,7 @@ namespace keepr.Controllers
     }
 
     // PUT api/teams/5
+    [Authorize]
     [HttpPut("{id}")]
     public ActionResult<Keep> Put(int id, [FromBody] Keep value)
     {
@@ -76,6 +98,7 @@ namespace keepr.Controllers
 
     // DELETE api/teams/5
     [HttpDelete("{id}")]
+    [Authorize]
     public ActionResult<string> Delete(int id)
     {
       try

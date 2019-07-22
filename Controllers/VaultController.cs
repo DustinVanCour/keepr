@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using keepr.Models;
 using keepr.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace keepr.Controllers
@@ -31,8 +33,9 @@ namespace keepr.Controllers
       }
     }
 
-    // GET api/teams/5
+    // GET api/vaults/5
     [HttpGet("{id}")]
+    [Authorize]
     public ActionResult<Vault> Get(int id)
     {
       try
@@ -45,12 +48,15 @@ namespace keepr.Controllers
       }
     }
 
-    // POST api/teams
+    // POST api/vaults
     [HttpPost]
+    [Authorize]
     public ActionResult<Vault> Post([FromBody] Vault value)
     {
       try
       {
+        var id = HttpContext.User.FindFirstValue("Id");
+        value.UserId = id;
         return Ok(_repo.Create(value));
       }
       catch (Exception e)
@@ -59,8 +65,9 @@ namespace keepr.Controllers
       }
     }
 
-    // PUT api/teams/5
+    // PUT api/vaults/5
     [HttpPut("{id}")]
+    [Authorize]
     public ActionResult<Vault> Put(int id, [FromBody] Vault value)
     {
       try
@@ -74,8 +81,9 @@ namespace keepr.Controllers
       }
     }
 
-    // DELETE api/teams/5
+    // DELETE api/vaults/5
     [HttpDelete("{id}")]
+    [Authorize]
     public ActionResult<string> Delete(int id)
     {
       try
