@@ -33,13 +33,15 @@ namespace keepr.Controllers
       }
     }
 
-    // GET api/teams/5
+    // GET api/valtkeeps/5
     [HttpGet("{id}")]
-    public ActionResult<VaultKeep> Get(int id)
+    [Authorize]
+    public ActionResult<VaultKeep> Get(int vaultId)
     {
       try
       {
-        return Ok(_repo.GetById(id));
+        var userId = HttpContext.User.FindFirstValue("Id");
+        return Ok(_repo.GetKeepsByVaultId(vaultId, userId));
       }
       catch (Exception e)
       {
@@ -79,13 +81,16 @@ namespace keepr.Controllers
       }
     }
 
-    // DELETE api/teams/5
-    [HttpDelete("{id}")]
-    public ActionResult<string> Delete(int id)
+    // DELETE api/vaultkeeps/5
+    [HttpPut]
+    [Authorize]
+    public ActionResult<string> Delete(VaultKeep value)
     {
       try
       {
-        return Ok(_repo.Delete(id));
+        var userId = HttpContext.User.FindFirstValue("Id");
+        value.UserId = userId;
+        return Ok(_repo.Delete(value));
       }
       catch (Exception e)
       {

@@ -64,7 +64,7 @@ namespace keepr.Controllers
       }
     }
 
-    // POST api/teams
+    // POST api/keeps
     [HttpPost]
     [Authorize]
     public ActionResult<Keep> Post([FromBody] Keep value)
@@ -81,7 +81,7 @@ namespace keepr.Controllers
       }
     }
 
-    // PUT api/teams/5
+    // PUT api/keeps/5
     [Authorize]
     [HttpPut("{id}")]
     public ActionResult<Keep> Put(int id, [FromBody] Keep value)

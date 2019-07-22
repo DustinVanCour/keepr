@@ -20,9 +20,15 @@ namespace keepr.Repositories
       return _db.Query<VaultKeep>("SELECT * FROM vaultkeeps");
     }
 
-    internal object GetById(int id)
+    public IEnumerable<Keep> GetKeepsByVaultId(int vaultId, string userId)
     {
-      throw new NotImplementedException();
+      string query = @"
+      SELECT * FROM vaultkeeps vk
+      INNER JOIN keeps k ON k.id = vk.keepId
+      WHERE(vaultId = @vaultId AND vk.userId = @userId);";
+      IEnumerable<Keep> data = _db.Query<Keep>(query, new { vaultId, userId });
+      if (data == null) throw new Exception("Invalid ID");
+      return data;
     }
 
     public VaultKeep Create(VaultKeep value)
@@ -41,9 +47,13 @@ namespace keepr.Repositories
       throw new NotImplementedException();
     }
 
-    internal object Delete(int id)
+    public string Delete(VaultKeep value)
     {
-      throw new NotImplementedException();
+      string query = @"
+      DELETE FROM vaultkeeps WHERE(vaultId = @VaultId AND keepId = @KeepId AND userId = @UserId);";
+      int changedRows = _db.Execute(query, value);
+      if (changedRows < 1) throw new Exception("Invalid Id");
+      return "Successfully Deleted VaultKeep";
     }
   }
 }
