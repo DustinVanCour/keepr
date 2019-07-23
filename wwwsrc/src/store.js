@@ -16,7 +16,8 @@ let api = Axios.create({
 
 export default new Vuex.Store({
   state: {
-    user: {}
+    user: {},
+    keeps: []
   },
   mutations: {
     setUser(state, user) {
@@ -25,7 +26,11 @@ export default new Vuex.Store({
     resetState(state) {
       //clear the entire state object of user data
       state.user = {}
+    },
+    setKeeps(state, keeps) {
+      state.keeps = keeps
     }
+
   },
   actions: {
     async register({ commit, dispatch }, creds) {
@@ -55,6 +60,17 @@ export default new Vuex.Store({
       } catch (e) {
         console.warn(e.message)
       }
-    }
+    },
+
+    // --KEEPS METHODS--
+
+    async getAllPublicKeeps({ commit, dispatch }) {
+      await api.get('keeps')
+        .then(res => {
+          commit('setKeeps', res.data)
+        })
+    },
+
+
   }
 })
