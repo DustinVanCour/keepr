@@ -3,12 +3,31 @@
     <h1>Welcome Home {{user.username}}</h1>
     <button v-if="user.id" @click="logout">logout</button>
     <router-link v-else :to="{name: 'login'}">Login</router-link>
-    <publickeep></publickeep>
+
+    <form @submit.prevent="createSubmit()">
+      <input class="form-control" type="text" placeholder="Name/Title" v-model="name" />
+      <input class="form-control" type="text" placeholder="Description" v-model="description" />
+      <input class="form-control" type="text" placeholder="Img URL" v-model="img" />
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="isPrivate"
+        v-model="isPrivate"
+        :value="true"
+      />
+      <label class="form-check-label" for="isPrivate">Make Private?</label>
+      <br />
+      <button class="btn btn-info mt-2" type="submit">Create Note</button>
+    </form>
+
+    <div class="container-fluid">
+      <publickeep></publickeep>
+    </div>
   </div>
 </template>
 
 <script>
-import publickeep from "../components/publickeep.vue"
+import publickeep from "../components/publickeep.vue";
 
 export default {
   name: "home",
@@ -17,12 +36,30 @@ export default {
       return this.$store.state.user;
     }
   },
-    mounted() {
+  data() {
+    return {
+      name: "",
+      description: "",
+      img: "",
+      isPrivate: false
+    };
+  },
+  mounted() {
     this.$store.dispatch("getAllPublicKeeps");
   },
+
   methods: {
     logout() {
       this.$store.dispatch("logout");
+    },
+    createSubmit() {
+      let data = {
+        name: this.name,
+        description: this.description,
+        img: this.img,
+        isPrivate: this.isPrivate
+      };
+      this.$store.dispatch("createKeep", data);
     }
   },
   components: {
