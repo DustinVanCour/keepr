@@ -15,9 +15,9 @@ namespace keepr.Repositories
       _db = db;
     }
 
-    public IEnumerable<Keep> GetAll()
+    public IEnumerable<Keep> GetAll(string id)
     {
-      return _db.Query<Keep>("SELECT * FROM keeps WHERE isPrivate = 0");
+      return _db.Query<Keep>("SELECT * FROM keeps WHERE isPrivate = 0 OR userId = @id", new { id });
     }
 
     public Keep GetById(int id)
@@ -54,7 +54,8 @@ namespace keepr.Repositories
       UPDATE keeps
       SET
       name = @Name,
-      description = @Description
+      description = @Description,
+      img = @Img
       WHERE id = @Id;
       SELECT * FROM keeps WHERE id = @Id;";
       return _db.QueryFirstOrDefault<Keep>(query, value);

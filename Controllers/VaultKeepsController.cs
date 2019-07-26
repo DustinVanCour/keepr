@@ -19,7 +19,7 @@ namespace keepr.Controllers
     {
       _repo = repo;
     }
-    // GET api/teams
+    // GET api/vaultkeeps
     [HttpGet]
     public ActionResult<IEnumerable<VaultKeep>> Get()
     {
@@ -34,7 +34,7 @@ namespace keepr.Controllers
     }
 
     // GET api/valtkeeps/5
-    [HttpGet("{id}")]
+    [HttpGet("{vaultId}")]
     [Authorize]
     public ActionResult<VaultKeep> Get(int vaultId)
     {
@@ -67,11 +67,14 @@ namespace keepr.Controllers
     }
 
     // PUT api/teams/5
-    [HttpPut("{id}")]
-    public ActionResult<VaultKeep> Put(int id, [FromBody] Vault value)
+    [HttpPut]
+    [Authorize]
+    public ActionResult<VaultKeep> Put(int id, [FromBody] VaultKeep value)
     {
       try
       {
+        var userId = HttpContext.User.FindFirstValue("Id");
+        value.UserId = userId;
         value.Id = id;
         return Ok(_repo.Update(value));
       }
@@ -82,7 +85,7 @@ namespace keepr.Controllers
     }
 
     // DELETE api/vaultkeeps/5
-    [HttpPut]
+    [HttpDelete]
     [Authorize]
     public ActionResult<string> Delete(VaultKeep value)
     {

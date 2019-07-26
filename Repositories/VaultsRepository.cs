@@ -15,24 +15,33 @@ namespace keepr.Repositories
       _db = db;
     }
 
-    public IEnumerable<Vault> GetAll()
-    {
-      return _db.Query<Vault>("SELECT * FROM vaults");
-    }
+    // public IEnumerable<Vault> GetAll()
+    // {
+    //   return _db.Query<Vault>("SELECT * FROM vaults");
+    // }
 
-    public Vault GetById(int id)
+    public IEnumerable<Vault> GetById(string id)
     {
-      string query = "SELECT * FROM vaults WHERE id = @Id";
-      Vault data = _db.QueryFirstOrDefault<Vault>(query, new { id });
+      string query = "SELECT * FROM vaults WHERE userId = @id";
+      return _db.Query<Vault>(query, new { id });
+      // Vault data = _db.QueryFirstOrDefault<Vault>(query, new { id });
+      // if (data == null) throw new Exception("Invalid ID");
+      // return data;
+    }
+    public Vault GetByVaultId(string user, int id)
+    {
+      string query = "SELECT * FROM vaults WHERE id = @Id AND userId = @user";
+      Vault data = _db.QueryFirstOrDefault<Vault>(query, new { id, user });
       if (data == null) throw new Exception("Invalid ID");
       return data;
     }
 
+
     public Vault Create(Vault value)
     {
       string query = @"
-      INSERT INTO vaults (name, description)
-      VALUES (@Name, @Description);
+      INSERT INTO vaults (name, description, userId)
+      VALUES (@Name, @Description, @UserId);
       SELECT LAST_INSERT_ID();";
       int id = _db.ExecuteScalar<int>(query, value);
       value.Id = id;

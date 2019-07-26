@@ -42,9 +42,13 @@ namespace keepr.Repositories
       return value;
     }
 
-    internal object Update(Vault value)
+    internal object Update(VaultKeep value)
     {
-      throw new NotImplementedException();
+      string query = @"
+      DELETE FROM vaultkeeps WHERE(vaultId = @VaultId AND keepId = @KeepId AND userId = @UserId);";
+      int changedRows = _db.Execute(query, value);
+      if (changedRows < 1) throw new Exception("Invalid Id");
+      return "Successfully Deleted VaultKeep";
     }
 
     public string Delete(VaultKeep value)

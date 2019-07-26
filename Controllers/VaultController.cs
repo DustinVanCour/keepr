@@ -20,27 +20,42 @@ namespace keepr.Controllers
       _repo = repo;
     }
     // GET api/teams
+    // [HttpGet]
+    // public ActionResult<IEnumerable<Vault>> Get()
+    // {
+    //   try
+    //   {
+    //     return Ok(_repo.GetAll());
+    //   }
+    //   catch (Exception e)
+    //   {
+    //     return BadRequest(e);
+    //   }
+    // }
+
+    // GET api/vaults
     [HttpGet]
+    [Authorize]
     public ActionResult<IEnumerable<Vault>> Get()
     {
       try
       {
-        return Ok(_repo.GetAll());
+        var id = HttpContext.User.FindFirstValue("Id");
+        return Ok(_repo.GetById(id));
       }
       catch (Exception e)
       {
         return BadRequest(e);
       }
     }
-
-    // GET api/vaults/5
     [HttpGet("{id}")]
     [Authorize]
-    public ActionResult<Vault> Get(int id)
+    public ActionResult<Vault> GetById(int id)
     {
       try
       {
-        return Ok(_repo.GetById(id));
+        var user = HttpContext.User.FindFirstValue("Id");
+        return Ok(_repo.GetByVaultId(user, id));
       }
       catch (Exception e)
       {

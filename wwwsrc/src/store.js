@@ -18,7 +18,10 @@ export default new Vuex.Store({
   state: {
     user: {},
     keeps: [],
-    vaults: []
+    vaults: [],
+    activevault: {},
+    vaultkeeps: [],
+    userkeeps: []
   },
   mutations: {
     setUser(state, user) {
@@ -33,6 +36,15 @@ export default new Vuex.Store({
     },
     setVaults(state, vaults) {
       state.vaults = vaults
+    },
+    setVaultKeeps(state, vaultkeeps) {
+      state.vaultkeeps = vaultkeeps
+    },
+    setActiveVault(state, activevault) {
+      state.activevault = activevault
+    },
+    setUserKeeps(state, userkeeps) {
+      state.userkeeps = userkeeps
     }
 
   },
@@ -74,10 +86,36 @@ export default new Vuex.Store({
           commit('setKeeps', res.data)
         })
     },
+    async getKeepsByUserId({ commit, dispatch }) {
+      ;
+      await api.get('keeps/user')
+        .then(res => {
+          commit('setUserKeeps', res.data)
+        })
+    },
     async createKeep({ commit, dispatch }, payload) {
       await api.post('keeps', payload)
         .then(res => {
           dispatch('getAllPublicKeeps')
+        })
+    },
+    async updateKeep({ commit, dispatch }, data) {
+      ;
+      let res = await api.put('keeps/' + data.id, data)
+        .then(res => {
+          dispatch('getAllPublicKeeps', data.id)
+        })
+    },
+    deleteKeep({ commit, dispatch }, payload) {
+      api.delete('keeps/' + payload)
+        .then(res => {
+          dispatch('getAllPublicKeeps')
+        })
+    },
+    getKeepsByVaultId({ commit, dispatch }, vaultId) {
+      api.get('vaultkeeps/' + vaultId)
+        .then(res => {
+          commit('setVaultKeeps', res.data)
         })
     },
 
@@ -95,6 +133,45 @@ export default new Vuex.Store({
           dispatch('getVaults')
         })
     },
+    deleteVault({ commit, dispatch }, payload) {
+      api.delete('vaults/' + payload)
+        .then(res => {
+          dispatch('getVaults')
+        })
+    },
+    async getVaultById({ commit, dispatch }, id) {
+      await api.get('vaults/' + id)
+        .then(res => {
+          commit('setActiveVault', res.data)
+        })
+    },
+    async updateVault({ commit, dispatch }, data) {
+      let res = await api.put('vaults/' + data.vaultId, data)
+        .then(res => {
+          dispatch('getVaults', data.vaultid)
+        })
+    },
 
+    // VAULTKEEP METHODS
+    async getVaultKeeps({ commit, dispatch }, vaultId) {
+      await api.get('vaultkeeps/' + vaultId)
+        .then(res => {
+
+          commit('setVaultKeeps', res.data)
+        })
+    },
+    async addToVault({ commit, dispatch }, payload) {
+      await api.post('vaultkeeps/', payload)
+        .then(res => {
+          dispatch('getVaultKeeps', payload.vaultId)
+        })
+    },
+    async removeKeep({ commit, dispatch }, vaultKeep) {
+      ;
+      await api.put('vaultkeeps/', vaultKeep)
+        .then(res => {
+          dispatch('getKeepsByVaultId', vaultKeep.vaultId)
+        })
+    }
   }
 })

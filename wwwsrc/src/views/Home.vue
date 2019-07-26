@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <navbar></navbar>
     <h1>Welcome Home {{user.username}}</h1>
     <button v-if="user.id" @click="logout">logout</button>
     <router-link v-else :to="{name: 'login'}">Login</router-link>
@@ -28,6 +29,7 @@
 
 <script>
 import publickeep from "../components/publickeep.vue";
+import navbar from "../components/navbar.vue";
 
 export default {
   name: "home",
@@ -46,6 +48,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch("getAllPublicKeeps");
+    this.$store.dispatch("getVaults");
   },
 
   methods: {
@@ -63,7 +66,8 @@ export default {
     }
   },
   components: {
-    publickeep
+    publickeep,
+    navbar
   }
 };
 </script>
